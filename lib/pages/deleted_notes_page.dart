@@ -92,7 +92,7 @@ class DeletedNotesPage extends StatelessWidget {
                               },
                             );
                             if (shouldDelete == true) {
-                              provider.permanentlyDeleteNote(note.id);
+                              provider.permanentlyDeleteNote(note);
                             }
                           },
                           icon: const Icon(

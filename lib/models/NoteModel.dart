@@ -32,7 +32,7 @@ class NoteModel {
       title: json['title'],
       description: json['description'],
       createdAt: json['createdAt'],
-      deletedAt: json['deleteAt'],
+      deletedAt: json['deletedAt'],
     );
   }
 

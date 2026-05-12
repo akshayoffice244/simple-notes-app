@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:simple_notes_app/models/NoteModel.dart';
 
+import '../../models/deleted_note_history_model.dart';
+
 class FirestoreService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -13,6 +15,11 @@ class FirestoreService {
 
   CollectionReference get trashRef =>
       firestore.collection("users").doc(userId).collection("trash");
+
+  CollectionReference get historyRef =>
+      firestore.collection(
+        "deleted_note_history",
+      );
 
   //Add single note
   Future<void> addNote(NoteModel note) async {
@@ -65,9 +72,28 @@ class FirestoreService {
     await trashRef.doc(note.id).delete();
   }
 
-  Future<void> permanentlyDelete(String id) async {
+  Future<void> permanentlyDelete(NoteModel note) async {
+    // CREATE HISTORY RECORD
 
+    final history =
+    DeletedNoteHistoryModel(
+      noteId: note.id,
+      userId: userId,
+      title: note.title,
+      description: note.description,
+      createdAt: note.createdAt,
+      deletedAt: note.deletedAt ?? '',
+      permanentlyDeletedAt:
+      DateTime.now()
+          .toIso8601String(),
+    );
+
+    // STORE IN HISTORY COLLECTION
+
+    await historyRef.add(
+      history.toJson(),
+    );
     //remove from trash
-    await trashRef.doc(id).delete();
+    await trashRef.doc(note.id).delete();
   }
 }

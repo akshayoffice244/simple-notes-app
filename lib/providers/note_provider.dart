@@ -53,8 +53,8 @@ class NoteProvider extends ChangeNotifier {
     await _firestoreService.restoreNote(note);
   }
   //permanently delete note
-Future<void> permanentlyDeleteNote(String id) async{
-    await _firestoreService.permanentlyDelete(id);
+Future<void> permanentlyDeleteNote(NoteModel note) async{
+    await _firestoreService.permanentlyDelete(note);
 }
 
   //following is code for local storage using sharedprefs
