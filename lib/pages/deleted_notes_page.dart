@@ -48,7 +48,7 @@ class DeletedNotesPage extends StatelessWidget {
                   IconButton(
                     onPressed: () {
                       provider.restoreNote(
-                        index,
+                        note
                       );
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Successfully restore note!")));
                     },
@@ -93,7 +93,7 @@ class DeletedNotesPage extends StatelessWidget {
                       {
                         provider
                             .permanentlyDeleteNote(
-                          index,
+                          note.id
                         );
                       }
                     },

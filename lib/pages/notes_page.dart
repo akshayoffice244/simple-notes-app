@@ -19,10 +19,15 @@ class _NotesPageState extends State<NotesPage> {
   @override
   void initState() {
     super.initState();
+    final provider =
+    context.read<NoteProvider>();
 
-    Future.microtask(() {
-      context.read<NoteProvider>().loadNotes();
-    });
+    provider.listenToNotes();
+
+    provider.listenToDeletedNotes();
+    // Future.microtask(() {
+    //   context.read<NoteProvider>().loadNotes();
+    // });
   }
 
   void openBottomSheet({dynamic note, int? index}) {
@@ -163,7 +168,7 @@ class _NotesPageState extends State<NotesPage> {
                               // DELETE ONLY IF USER CONFIRMS
 
                               if (shouldDelete == true) {
-                                noteProvider.deleteNote(index);
+                                noteProvider.deleteNote(note);
                               }
                             },
                             icon: const Icon(

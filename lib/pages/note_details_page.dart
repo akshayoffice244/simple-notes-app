@@ -86,7 +86,7 @@ class NoteDetailsPage extends StatelessWidget {
     );
 
     if (shouldDelete == true) {
-      await provider.deleteNote(index);
+      await provider.deleteNote(note);
 
       Navigator.pop(context);
     }

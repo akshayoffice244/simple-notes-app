@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 import '../models/NoteModel.dart';
 import '../providers/note_provider.dart';
 
@@ -11,19 +10,15 @@ class NoteBottomSheet extends StatelessWidget {
   final NoteModel? note;
   final int? index;
 
-  const NoteBottomSheet({
-    super.key,
-    this.note,
-    this.index,
-  });
+  const NoteBottomSheet({super.key, this.note, this.index});
 
   @override
   Widget build(BuildContext context) {
-    final titleController =
-    TextEditingController(text: note?.title ?? '');
+    final titleController = TextEditingController(text: note?.title ?? '');
 
-    final descriptionController =
-    TextEditingController(text: note?.description ?? '');
+    final descriptionController = TextEditingController(
+      text: note?.description ?? '',
+    );
 
     return Padding(
       padding: EdgeInsets.only(
@@ -37,16 +32,12 @@ class NoteBottomSheet extends StatelessWidget {
         children: [
           Text(
             note == null ? 'Create Note' : 'Update Note',
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
 
           const SizedBox(height: 20),
 
           // TITLE
-
           TextField(
             controller: titleController,
             decoration: InputDecoration(
@@ -60,7 +51,6 @@ class NoteBottomSheet extends StatelessWidget {
           const SizedBox(height: 16),
 
           // DESCRIPTION
-
           TextField(
             controller: descriptionController,
             maxLines: 5,
@@ -78,44 +68,34 @@ class NoteBottomSheet extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () async {
-                final title =
-                titleController.text.trim();
+                final title = titleController.text.trim();
 
-                final description =
-                descriptionController.text.trim();
+                final description = descriptionController.text.trim();
 
-                if (title.isEmpty ||
-                    description.isEmpty) {
+                if (title.isEmpty || description.isEmpty) {
                   return;
                 }
 
-                final noteProvider =
-                context.read<NoteProvider>();
+                final noteProvider = context.read<NoteProvider>();
 
                 final newNote = NoteModel(
+                  id: note == null ? DateTime.now().millisecondsSinceEpoch.toString() : note!.id,
                   title: title,
                   description: description,
-                  createdAt:
-                  note?.createdAt ??
-                      DateTime.now().toString(),
+                  createdAt: note?.createdAt ?? DateTime.now().toString(),
                 );
 
-                if (index == null) {
+
+                if (note == null) {
                   await noteProvider.addNote(newNote);
                 } else {
-                  await noteProvider.updateNote(
-                    index!,
-                    newNote,
-                  );
+                  await noteProvider.updateNote(newNote);
                 }
+                print("notes ${note == null}");
 
                 Navigator.pop(context);
               },
-              child: Text(
-                note == null
-                    ? 'Create Note'
-                    : 'Update Note',
-              ),
+              child: Text(note == null ? 'Create Note' : 'Update Note'),
             ),
           ),
         ],
