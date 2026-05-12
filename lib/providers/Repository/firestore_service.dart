@@ -16,6 +16,7 @@ class FirestoreService {
 
   //Add single note
   Future<void> addNote(NoteModel note) async {
+
     await notesRef.doc(note.id).set(note.toJson());
   }
 
@@ -46,7 +47,9 @@ class FirestoreService {
 
   Future<void> deleteNote(NoteModel note) async {
     //add to trash
-    await trashRef.doc(note.id).set(note.toJson());
+    final deleteNote = note.copyWith(deletedAt:  DateTime.now().toIso8601String());
+
+    await trashRef.doc(deleteNote.id).set(deleteNote.toJson());
 
     //remove from active notes
     await notesRef.doc(note.id).delete();
@@ -54,10 +57,12 @@ class FirestoreService {
 
   //restore note
   Future<void> restoreNote(NoteModel note) async {
+    final restoredNote = note.copyWith(deletedAt: null);
+
     //add to active notes
-    await notesRef.doc(note.id).set(note);
+    await notesRef.doc(note.id).set(restoredNote.toJson());
     //remove from trash
-    await notesRef.doc(note.id).delete();
+    await trashRef.doc(note.id).delete();
   }
 
   Future<void> permanentlyDelete(String id) async {

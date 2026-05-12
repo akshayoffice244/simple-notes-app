@@ -1,6 +1,7 @@
 // lib/pages/notes_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/note_provider.dart';
@@ -70,7 +71,7 @@ class _NotesPageState extends State<NotesPage> {
               itemCount: notes.length,
               itemBuilder: (context, index) {
                 final note = notes[index];
-
+              //  print("length "+note.description.length.toString());
                 return Card(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -103,12 +104,15 @@ class _NotesPageState extends State<NotesPage> {
                       children: [
                         const SizedBox(height: 8),
 
-                        Text(note.description),
+                        Text(note.description.length < 50 ? note.description : "${note.description.substring(0,50)}..."),
 
                         const SizedBox(height: 10),
 
                         Text(
-                          note.createdAt,
+
+                          DateFormat(
+                            'dd MMM yyyy, hh:mm a',
+                          ).format(DateTime.parse(note.createdAt )),
                           style: const TextStyle(
                             fontSize: 12,
                             color: Colors.grey,

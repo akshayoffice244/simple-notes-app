@@ -44,6 +44,7 @@ class NoteProvider extends ChangeNotifier {
 
   //delete note
   Future<void> deleteNote(NoteModel note) async{
+
     await _firestoreService.deleteNote(note);
   }
 
