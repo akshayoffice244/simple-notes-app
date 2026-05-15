@@ -1,3 +1,5 @@
+import 'package:simple_notes_app/models/NoteModel.dart';
+
 class DeletedNoteHistoryModel {
   final String noteId;
 
@@ -5,7 +7,7 @@ class DeletedNoteHistoryModel {
 
   final String title;
 
-  final String description;
+  final List<NoteBlockModel> blocks;
 
   final String createdAt;
 
@@ -17,7 +19,7 @@ class DeletedNoteHistoryModel {
     required this.noteId,
     required this.userId,
     required this.title,
-    required this.description,
+    required this.blocks,
     required this.createdAt,
     required this.deletedAt,
     required this.permanentlyDeletedAt,
@@ -28,7 +30,7 @@ class DeletedNoteHistoryModel {
       'noteId': noteId,
       'userId': userId,
       'title': title,
-      'description': description,
+      'blocks': blocks,
       'createdAt': createdAt,
       'deletedAt': deletedAt,
       'permanentlyDeletedAt':
@@ -43,7 +45,7 @@ class DeletedNoteHistoryModel {
       noteId: json['noteId'],
       userId: json['userId'],
       title: json['title'],
-      description: json['description'],
+      blocks: json['blocks'],
       createdAt: json['createdAt'],
       deletedAt: json['deletedAt'],
       permanentlyDeletedAt:

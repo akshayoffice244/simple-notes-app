@@ -6,100 +6,204 @@ import 'package:provider/provider.dart';
 import '../models/NoteModel.dart';
 import '../providers/note_provider.dart';
 
-class NoteBottomSheet extends StatelessWidget {
+class NoteBottomSheet extends StatefulWidget {
+  const NoteBottomSheet({super.key, required this.note, required this.index});
+
   final NoteModel? note;
   final int? index;
 
-  const NoteBottomSheet({super.key, this.note, this.index});
+  @override
+  State<NoteBottomSheet> createState() => _NoteBottomSheetState();
+}
+
+class _NoteBottomSheetState extends State<NoteBottomSheet> {
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<NoteProvider>();
+
+    return Scaffold(
+      appBar: AppBar(title: Text("Edit note")),
+        body:SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+            children: [
+              Container(
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: provider.listOfLists.length,
+                            itemBuilder: (context, i) {
+                              return _CustomListWidget(itemIndex: i);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    FilledButton(
+                      onPressed: () {
+                        provider.addList(NoteBlockType.none);
+                      },
+                      child: Text("Add List"),
+                    ),
+                  ],
+                ),
+              )
+            ],
+                  ),
+          ),
+        ),
+
+    );
+  }
+}
+
+class _CustomListWidget extends StatelessWidget {
+  final int itemIndex;
+
+  const _CustomListWidget({super.key, required this.itemIndex});
 
   @override
   Widget build(BuildContext context) {
-    final titleController = TextEditingController(text: note?.title ?? '');
-
-    final descriptionController = TextEditingController(
-      text: note?.description ?? '',
-    );
-
-    return Padding(
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            note == null ? 'Create Note' : 'Update Note',
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-
-          const SizedBox(height: 20),
-
-          // TITLE
-          TextField(
-            controller: titleController,
-            decoration: InputDecoration(
-              hintText: 'Title',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // DESCRIPTION
-          TextField(
-            controller: descriptionController,
-            maxLines: 5,
-            decoration: InputDecoration(
-              hintText: 'Write your note...',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () async {
-                final title = titleController.text.trim();
-
-                final description = descriptionController.text.trim();
-
-                if (title.isEmpty || description.isEmpty) {
-                  return;
-                }
-
-                final noteProvider = context.read<NoteProvider>();
-
-                final newNote = NoteModel(
-                  id: note == null ? DateTime.now().millisecondsSinceEpoch.toString() : note!.id,
-                  title: title,
-                  description: description,
-                  createdAt: note?.createdAt ?? DateTime.now().toString(),
-                );
+    final provider = context.watch<NoteProvider>();
 
 
-                if (note == null) {
-                  await noteProvider.addNote(newNote);
-                } else {
-                  await noteProvider.updateNote(newNote);
-                }
-                print("notes ${note == null}");
 
-                Navigator.pop(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: 20),
+        Row(
+          spacing: 10,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text("List Type"),
+            DropdownMenu(
+              // This single property handles stretching both the input bar AND the popup menu list
+              onSelected: (value) {
+                provider.setListType(value, itemIndex);
               },
-              child: Text(note == null ? 'Create Note' : 'Update Note'),
+              inputDecorationTheme: InputDecorationTheme(
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: const BorderSide(
+                    //     color: AppColors.borderColor,
+                    width: 1,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: const BorderSide(
+                    // color: AppColors.borderColor,
+                    width: 1,
+                  ),
+                ),
+              ),
+              menuStyle: MenuStyle(
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: const BorderSide(
+                      width: 1,
+                      // color: AppColors.borderColor,
+                    ),
+                  ),
+                ),
+              ),
+              label: Text("Select List Type"),
+              dropdownMenuEntries: const [
+                DropdownMenuEntry(value: 1, label: "bullet"),
+                DropdownMenuEntry(value: 2, label: "numberList"),
+                DropdownMenuEntry(value: 3, label: "dashedList"),
+              ],
             ),
+          ],
+        ),
+        if (provider.listOfLists[itemIndex].first.type ==
+                NoteBlockType.dashedListHeading ||
+            provider.listOfLists[itemIndex].first.type ==
+                NoteBlockType.numberedListHeading ||
+            provider.listOfLists[itemIndex].first.type ==
+                NoteBlockType.bulletListHeading)
+          Row(
+            children: [
+              Text("List heading:"),
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Enter list title",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        Column(
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: provider.listOfLists[itemIndex].length - 1,
+              itemBuilder: (context, index) {
+                NoteBlockType type = provider.listOfLists[itemIndex].first.type;
+                int i = 0;
+                late Widget widget;
+                if (type == NoteBlockType.numberedListHeading)
+                  widget = Text("${i} ");
+                else if (type == NoteBlockType.bulletListHeading)
+                  widget = Text("0 ");
+                else
+                  widget = Text("- ");
+                i++;
+                return Row(
+                  children: [
+                    widget,
+                    Expanded(
+                      child: TextField(
+
+                        decoration: InputDecoration(
+                          hintText: "Enter list text",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+        SizedBox(height: 10),
+        if (provider.listOfLists[itemIndex].first.type != NoteBlockType.none)
+        TextButton(onPressed: () {
+          if(provider.listOfLists[itemIndex].first.type == NoteBlockType.numberedListHeading) {
+            provider.addItemsToList(NoteBlockType.numbered, itemIndex);
+          }
+          else if(provider.listOfLists[itemIndex].first.type == NoteBlockType.dashedListHeading) {
+            provider.addItemsToList(NoteBlockType.dashedList, itemIndex);
+          }
+          else  {
+            provider.addItemsToList(NoteBlockType.bullet, itemIndex);
+          }
+          print("Item was added");
+        }, child: Text("Add List item")),
+      ],
     );
   }
 }

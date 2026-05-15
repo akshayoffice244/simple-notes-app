@@ -156,7 +156,7 @@ class NoteDetailsPage extends StatelessWidget {
             // DESCRIPTION
 
             Text(
-              note.description,
+              "",
               style: const TextStyle(
                 fontSize: 18,
                 height: 1.5,

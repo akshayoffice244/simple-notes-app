@@ -15,6 +15,45 @@ class NoteProvider extends ChangeNotifier {
   List<NoteModel> get notes => _notes;
 
   List<NoteModel> get deletedNotes => _deletedNotes;
+  final List<List<EditableBlockModel>> listOfLists = [];
+
+  void addList(NoteBlockType type) {
+    listOfLists.add([
+      EditableBlockModel(type: type, controller: TextEditingController()),
+    ]);
+    notifyListeners();
+  }
+
+  void addItemsToList(NoteBlockType listItemType, int index) {
+    listOfLists[index].add(
+      EditableBlockModel(
+        type: listItemType,
+        controller: TextEditingController(),
+      ),
+    );
+    notifyListeners();
+  }
+
+  void setListType(value, index) {
+    late NoteBlockType type;
+    switch (value) {
+      case 1:
+        type = NoteBlockType.bulletListHeading;
+        break;
+
+      case 2:
+        type = NoteBlockType.numberedListHeading;
+        break;
+      case 3:
+        type = NoteBlockType.dashedList;
+        break;
+    }
+    print("List heading type: ");
+    print(type);
+    listOfLists[index].first.type = type;
+    notifyListeners();
+
+  }
 
   //listen active notes
   void listenToNotes() {
@@ -43,19 +82,19 @@ class NoteProvider extends ChangeNotifier {
   }
 
   //delete note
-  Future<void> deleteNote(NoteModel note) async{
-
+  Future<void> deleteNote(NoteModel note) async {
     await _firestoreService.deleteNote(note);
   }
 
   //Restore note
-  Future<void> restoreNote(NoteModel note) async{
+  Future<void> restoreNote(NoteModel note) async {
     await _firestoreService.restoreNote(note);
   }
+
   //permanently delete note
-Future<void> permanentlyDeleteNote(NoteModel note) async{
+  Future<void> permanentlyDeleteNote(NoteModel note) async {
     await _firestoreService.permanentlyDelete(note);
-}
+  }
 
   //following is code for local storage using sharedprefs
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_notes_app/pages/notes_page.dart';
 import 'package:simple_notes_app/providers/note_provider.dart';
+import 'package:simple_notes_app/widgets/note_bottom_sheet.dart';
 
 import 'firebase_options.dart';
 
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      home: NotesPage(),
+      home: NoteBottomSheet( note: null,index: 0,),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -27,6 +27,7 @@ class DeletedNotesPage extends StatelessWidget {
                 final formattedDate = DateFormat(
                   'dd MMM yyyy, hh:mm a',
                 ).format(DateTime.parse(note.deletedAt ?? DateTime.now().toIso8601String()));
+                final blocks = note.blocks;
                 return Card(
                   child: ListTile(
                     title: Text(note.title),
@@ -34,7 +35,7 @@ class DeletedNotesPage extends StatelessWidget {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(note.description),
+                        Text(blocks.isNotEmpty? blocks.first.text : "" ),
 
                         Text(
                           "Deleted At: $formattedDate",

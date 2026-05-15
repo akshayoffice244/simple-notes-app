@@ -104,7 +104,7 @@ class _NotesPageState extends State<NotesPage> {
                       children: [
                         const SizedBox(height: 8),
 
-                        Text(note.description.length < 50 ? note.description : "${note.description.substring(0,50)}..."),
+                     //   Text(note.description.length < 50 ? note.description : "${note.description.substring(0,50)}..."),
 
                         const SizedBox(height: 10),
 
