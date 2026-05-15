@@ -24,10 +24,12 @@ class _NoteBottomSheetState extends State<NoteBottomSheet> {
     return Scaffold(
       appBar: AppBar(title: Text("Edit note")),
         body:SafeArea(
+          
           child: SingleChildScrollView(
             child: Column(
             children: [
               Container(
+                padding: EdgeInsetsGeometry.all(20),
                 color: Colors.white,
                 child: Column(
                   children: [
