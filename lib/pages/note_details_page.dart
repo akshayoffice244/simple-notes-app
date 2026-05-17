@@ -1,6 +1,7 @@
 // lib/pages/note_details_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../models/NoteModel.dart';
@@ -11,20 +12,23 @@ class NoteDetailsPage extends StatelessWidget {
   final NoteModel note;
   final int index;
 
-  const NoteDetailsPage({super.key, required this.note, required this.index});
-
-  // OPEN UPDATE SHEET
+  const NoteDetailsPage({
+    super.key,
+    required this.note,
+    required this.index,
+  });
 
   void openUpdateBottomSheet(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => NoteBottomSheet(note: note, index: index),
+        builder: (context) => NoteBottomSheet(
+          note: note,
+          index: index,
+        ),
       ),
     );
   }
-
-  // DELETE DIALOG
 
   Future<void> showDeleteDialog(BuildContext context) async {
     final provider = context.read<NoteProvider>();
@@ -33,23 +37,57 @@ class NoteDetailsPage extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Delete Note'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
 
-          content: const Text('Are you sure you want to delete this note?'),
+          title: Text(
+            "Delete Note",
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+
+          content: Text(
+            "Are you sure you want to delete this note?",
+            style: GoogleFonts.inter(
+              fontSize: 15,
+              height: 1.5,
+            ),
+          ),
 
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context, false);
               },
-              child: const Text('Cancel'),
+
+              child: Text(
+                "Cancel",
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
 
-            ElevatedButton(
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.red.shade400,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+
               onPressed: () {
                 Navigator.pop(context, true);
               },
-              child: const Text('Delete'),
+
+              child: Text(
+                "Delete",
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         );
@@ -67,44 +105,49 @@ class NoteDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     List<List<NoteBlockModel>> listOfLists = [];
 
-    String? title;
     String? heading;
     String? subHeading;
     String? body;
+
     int currentIndex = 0;
+
     if (note.blocks.isNotEmpty) {
       for (var list in note.blocks) {
         switch (list.type) {
           case NoteBlockType.heading:
             heading = list.text ?? "";
             break;
+
           case NoteBlockType.subheading:
             subHeading = list.text ?? "";
-
             break;
+
           case NoteBlockType.body:
             body = list.text ?? "";
             break;
+
           default:
             NoteBlockModel noteBlockModel = NoteBlockModel(
               type: list.type,
               text: list.text,
             );
-            if (listOfLists.isEmpty) {
-              // currentListType = list.type;
 
+            if (listOfLists.isEmpty) {
               listOfLists.add([noteBlockModel]);
-            } else if (listOfLists[currentIndex].first.type != list.type &&
+            } else if (listOfLists[currentIndex].first.type !=
+                list.type &&
                 list.type == NoteBlockType.numbered) {
               listOfLists[currentIndex].add(noteBlockModel);
-            } else if (listOfLists[currentIndex].first.type != list.type &&
+            } else if (listOfLists[currentIndex].first.type !=
+                list.type &&
                 list.type == NoteBlockType.dashedList) {
               listOfLists[currentIndex].add(noteBlockModel);
-            } else if (listOfLists[currentIndex].first.type != list.type &&
+            } else if (listOfLists[currentIndex].first.type !=
+                list.type &&
                 list.type == NoteBlockType.bullet) {
               listOfLists[currentIndex].add(noteBlockModel);
             } else if (listOfLists[currentIndex].first.type ==
-                    NoteBlockType.numberedListHeading ||
+                NoteBlockType.numberedListHeading ||
                 listOfLists[currentIndex].first.type ==
                     NoteBlockType.dashedListHeading ||
                 listOfLists[currentIndex].first.type ==
@@ -119,90 +162,187 @@ class NoteDetailsPage extends StatelessWidget {
     }
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FB),
+
       appBar: AppBar(
-        title: const Text('Note Details'),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: const Color(0xFFF8F9FB),
+        surfaceTintColor: Colors.transparent,
+
+        titleSpacing: 20,
+
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Note Details",
+              style: GoogleFonts.poppins(
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
+              ),
+            ),
+
+            Text(
+              "View your note",
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
 
         actions: [
-          // UPDATE
-          IconButton(
-            onPressed: () {
-              openUpdateBottomSheet(context);
-            },
-            icon: const Icon(Icons.edit),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+
+            child: IconButton(
+              onPressed: () {
+                openUpdateBottomSheet(context);
+              },
+
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.blue.shade50,
+
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+
+              icon: Icon(
+                Icons.edit_rounded,
+                color: Colors.blue.shade500,
+              ),
+            ),
           ),
 
-          // DELETE
-          IconButton(
-            onPressed: () {
-              showDeleteDialog(context);
-            },
-            icon: const Icon(Icons.delete, color: Colors.red),
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+
+            child: IconButton(
+              onPressed: () {
+                showDeleteDialog(context);
+              },
+
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.red.shade50,
+
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+
+              icon: Icon(
+                Icons.delete_outline_rounded,
+                color: Colors.red.shade400,
+              ),
+            ),
           ),
         ],
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // TITLE
-            Text(
-              note.title,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+
+        child: Container(
+          width: double.infinity,
+
+          padding: const EdgeInsets.all(24),
+
+          decoration: BoxDecoration(
+            color: Colors.white,
+
+            borderRadius: BorderRadius.circular(28),
+
+            border: Border.all(
+              color: Colors.grey.shade200,
             ),
-            if (heading != null)
-              Column(
-                children: [
-                  SizedBox(height: 10),
-                  Text(
-                    heading,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
-            if (subHeading != null)
-              Column(
-                children: [
-                  SizedBox(height: 10),
-                  Text(
-                    subHeading,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.grey[700],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            if (body != null)
-              Column(
-                children: [
-                  SizedBox(height: 10),
-                  Text(
-                    body,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyLarge?.copyWith(height: 1.5),
-                  ),
-                ],
+            ],
+          ),
+
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                note.title,
+
+                style: GoogleFonts.poppins(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
+                  color: Colors.black87,
+                ),
               ),
 
-            //add here
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: listOfLists.length,
-              itemBuilder: (context, index) {
-                return _CustomListWidget(
-                  itemIndex: index,
-                  listOfLists: listOfLists,
-                );
-              },
-            ),
-          ],
+              if (heading != null && heading.isNotEmpty) ...[
+                const SizedBox(height: 28),
+
+                Text(
+                  heading,
+
+                  style: GoogleFonts.inter(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+
+              if (subHeading != null && subHeading.isNotEmpty) ...[
+                const SizedBox(height: 20),
+
+                Text(
+                  subHeading,
+
+                  style: GoogleFonts.inter(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey.shade700,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+
+              if (body != null && body.isNotEmpty) ...[
+                const SizedBox(height: 24),
+
+                Text(
+                  body,
+
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    height: 1.8,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+
+              if (listOfLists.isNotEmpty)
+                const SizedBox(height: 28),
+
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: listOfLists.length,
+                itemBuilder: (context, index) {
+                  return _CustomListWidget(
+                    itemIndex: index,
+                    listOfLists: listOfLists,
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -221,60 +361,103 @@ class _CustomListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<NoteProvider>();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 28),
 
-    return Column(
-      spacing: 10,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (listOfLists[itemIndex].first.type ==
-                NoteBlockType.dashedListHeading ||
-            listOfLists[itemIndex].first.type ==
-                NoteBlockType.numberedListHeading ||
-            listOfLists[itemIndex].first.type ==
-                NoteBlockType.bulletListHeading)
-          Row(
-            children: [
-              Expanded(
-                child: Text(listOfLists[itemIndex].first.text.toString()),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (listOfLists[itemIndex].first.type ==
+              NoteBlockType.dashedListHeading ||
+              listOfLists[itemIndex].first.type ==
+                  NoteBlockType.numberedListHeading ||
+              listOfLists[itemIndex].first.type ==
+                  NoteBlockType.bulletListHeading)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+
+              child: Text(
+                listOfLists[itemIndex].first.text.toString(),
+
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
+                ),
               ),
-            ],
-          ),
-        Column(
-          children: [
-            ListView.builder(
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: provider.listOfLists[itemIndex].length - 1,
-              itemBuilder: (context, index) {
-                NoteBlockType type = provider.listOfLists[itemIndex].first.type;
-
-                List<NoteBlockModel> itemList = listOfLists[itemIndex];
-                return Container(
-                  margin: EdgeInsets.only(top: 10),
-                  child: Row(
-                    spacing: 15,
-                    children: [
-                      Text(
-                        itemList[index + 1].type == NoteBlockType.numbered
-                            ? "${index + 1}"
-                            : itemList[index + 1].type == NoteBlockType.bullet
-                            ? "• "
-                            : "⁃",
-                      ),
-
-                      Expanded(
-                        child: Text(itemList[index + 1].text.toString()),
-                      ),
-                    ],
-                  ),
-                );
-              },
             ),
-          ],
-        ),
-      ],
+
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+
+            itemCount: listOfLists[itemIndex].length - 1,
+
+            itemBuilder: (context, index) {
+              List<NoteBlockModel> itemList =
+              listOfLists[itemIndex];
+
+              return Container(
+                margin: const EdgeInsets.only(top: 14),
+
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+
+                  borderRadius: BorderRadius.circular(18),
+
+                  border: Border.all(
+                    color: Colors.grey.shade200,
+                  ),
+                ),
+
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 2),
+
+                      child: Text(
+                        itemList[index + 1].type ==
+                            NoteBlockType.numbered
+                            ? "${index + 1}."
+                            : itemList[index + 1].type ==
+                            NoteBlockType.bullet
+                            ? "•"
+                            : "—",
+
+                        style: GoogleFonts.inter(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.blue.shade500,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 14),
+
+                    Expanded(
+                      child: Text(
+                        itemList[index + 1].text.toString(),
+
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          height: 1.6,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

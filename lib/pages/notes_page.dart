@@ -1,6 +1,7 @@
 // lib/pages/notes_page.dart
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -21,25 +22,23 @@ class _NotesPageState extends State<NotesPage> {
   @override
   void initState() {
     super.initState();
-    final provider =
-    context.read<NoteProvider>();
+
+    final provider = context.read<NoteProvider>();
 
     provider.listenToNotes();
-
     provider.listenToDeletedNotes();
-    // Future.microtask(() {
-    //   context.read<NoteProvider>().loadNotes();
-    // });
   }
 
-  void openBottomSheet({dynamic note, int? index}) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) {
-        return NoteBottomSheet(note: note, index: index);
-      },
-    );
+  void openBottomSheet({
+    dynamic note,
+    int? index,
+  }) {
+
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>  NoteBottomSheet(
+      note: note,
+      index: index,
+    )));
+
   }
 
   @override
@@ -49,169 +48,512 @@ class _NotesPageState extends State<NotesPage> {
     final notes = noteProvider.notes;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FB),
+
       appBar: AppBar(
-        title: const Text('Notes App'),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: const Color(0xFFF8F9FB),
+        surfaceTintColor: Colors.transparent,
+
+        titleSpacing: 20,
+
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "My Notes",
+
+              style: GoogleFonts.poppins(
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
+              ),
+            ),
+
+            Text(
+              "${notes.length} notes available",
+
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const DeletedNotesPage()),
-              );
-            },
-            icon: const Icon(Icons.delete),
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const DeletedNotesPage(),
+                  ),
+                );
+              },
+
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.red.shade50,
+
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+
+              icon: Icon(
+                Icons.delete_outline_rounded,
+                color: Colors.red.shade400,
+              ),
+            ),
           ),
         ],
       ),
 
       body: notes.isEmpty
-          ? const Center(
-              child: Text('No Notes Found', style: TextStyle(fontSize: 18)),
-            )
-          : ListView.builder(
-              itemCount: notes.length,
-              itemBuilder: (context, index) {
-                final note = notes[index];
-              //  print("length "+note.description.length.toString());
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+          ? Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  shape: BoxShape.circle,
+                ),
+
+                child: Icon(
+                  Icons.note_alt_outlined,
+                  size: 60,
+                  color: Colors.blue.shade400,
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              Text(
+                "No Notes Yet",
+
+                style: GoogleFonts.poppins(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              Text(
+                "Start writing your ideas,\nthoughts and tasks.",
+
+                textAlign: TextAlign.center,
+
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  height: 1.6,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              FilledButton.icon(
+                onPressed: () {
+                  openBottomSheet();
+                },
+
+                icon: const Icon(
+                  Icons.add_rounded,
+                ),
+
+                label: Text(
+                  "Create Note",
+
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
                   ),
-                  child: ListTile(
-                    onTap: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => NoteDetailsPage(
-                            note: note,
-                            index: index,
-                          ),
-                        ),
-                      );
-                    },
-                    contentPadding: const EdgeInsets.all(12),
+                ),
 
-                    title: Text(
-                      note.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
+                style: FilledButton.styleFrom(
+                  elevation: 0,
 
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 8),
+                  backgroundColor: Colors.blue.shade500,
 
-                     //   Text(note.description.length < 50 ? note.description : "${note.description.substring(0,50)}..."),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 22,
+                    vertical: 18,
+                  ),
 
-                        const SizedBox(height: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      )
+          : ListView.builder(
+        padding: const EdgeInsets.fromLTRB(
+          20,
+          8,
+          20,
+          100,
+        ),
 
-                        Text(
+        itemCount: notes.length,
 
-                          DateFormat(
-                            'dd MMM yyyy, hh:mm a',
-                          ).format(DateTime.parse(note.createdAt )),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
+        itemBuilder: (context, index) {
+          final note = notes[index];
 
-                    trailing: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Expanded(
-                          child: IconButton(
-                            style: IconButton.styleFrom(
-                              fixedSize: Size(20, 20),
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => NoteDetailsPage(
+                    note: note,
+                    index: index,
+                  ),
+                ),
+              );
+            },
+
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 18),
+
+              padding: const EdgeInsets.all(22),
+
+              decoration: BoxDecoration(
+                color: Colors.white,
+
+                borderRadius: BorderRadius.circular(28),
+
+                border: Border.all(
+                  color: Colors.grey.shade200,
+                ),
+
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 18,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+
+              child: Column(
+                crossAxisAlignment:
+                CrossAxisAlignment.start,
+
+                children: [
+                  Row(
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
+
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+
+                          children: [
+                            Text(
+                              note.title,
+
+                              maxLines: 2,
+                              overflow:
+                              TextOverflow.ellipsis,
+
+                              style: GoogleFonts.poppins(
+                                fontSize: 22,
+                                fontWeight:
+                                FontWeight.w700,
+                                color:
+                                Colors.black87,
+                                height: 1.3,
+                              ),
                             ),
+
+                            const SizedBox(height: 14),
+
+                            Container(
+                              padding:
+                              const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+
+                              decoration: BoxDecoration(
+                                color:
+                                Colors.grey.shade100,
+
+                                borderRadius:
+                                BorderRadius.circular(
+                                  14,
+                                ),
+                              ),
+
+                              child: Row(
+                                mainAxisSize:
+                                MainAxisSize.min,
+
+                                children: [
+                                  Icon(
+                                    Icons
+                                        .schedule_rounded,
+                                    size: 16,
+                                    color: Colors
+                                        .grey.shade600,
+                                  ),
+
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+
+                                  Text(
+                                    DateFormat(
+                                      'dd MMM yyyy, hh:mm a',
+                                    ).format(
+                                      DateTime.parse(
+                                        note.createdAt,
+                                      ),
+                                    ),
+
+                                    style:
+                                    GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: Colors
+                                          .grey.shade700,
+                                      fontWeight:
+                                      FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(width: 14),
+
+                      Column(
+                        children: [
+                          IconButton(
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => NoteBottomSheet(
-                                    note: note,
-                                    index: index,
-                                  ),
+                                  builder: (_) =>
+                                      NoteBottomSheet(
+                                        note: note,
+                                        index: index,
+                                      ),
                                 ),
                               );
                             },
-                            icon: const Icon(Icons.edit, size: 20),
-                          ),
-                        ),
 
-                        Expanded(
-                          child: IconButton(
-                            style: IconButton.styleFrom(
-                              fixedSize: Size(20, 20),
+                            style:
+                            IconButton.styleFrom(
+                              backgroundColor:
+                              Colors.blue.shade50,
+
+                              shape:
+                              RoundedRectangleBorder(
+                                borderRadius:
+                                BorderRadius.circular(
+                                  14,
+                                ),
+                              ),
                             ),
+
+                            icon: Icon(
+                              Icons.edit_rounded,
+                              size: 20,
+                              color:
+                              Colors.blue.shade500,
+                            ),
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          IconButton(
                             onPressed: () async {
-                              final shouldDelete = await showDialog<bool>(
+                              final shouldDelete =
+                              await showDialog<bool>(
                                 context: context,
+
                                 builder: (context) {
                                   return AlertDialog(
-                                    title: const Text('Delete Note'),
-                                    content: const Text(
-                                      'Are you sure you want to delete this note?',
+                                    shape:
+                                    RoundedRectangleBorder(
+                                      borderRadius:
+                                      BorderRadius.circular(
+                                        24,
+                                      ),
                                     ),
+
+                                    title: Text(
+                                      "Delete Note",
+
+                                      style:
+                                      GoogleFonts
+                                          .poppins(
+                                        fontWeight:
+                                        FontWeight
+                                            .w700,
+                                      ),
+                                    ),
+
+                                    content: Text(
+                                      "Are you sure you want to delete this note?",
+
+                                      style:
+                                      GoogleFonts
+                                          .inter(
+                                        fontSize: 15,
+                                        height: 1.5,
+                                      ),
+                                    ),
+
                                     actions: [
                                       TextButton(
                                         onPressed: () {
-                                          Navigator.pop(context, false);
+                                          Navigator.pop(
+                                            context,
+                                            false,
+                                          );
                                         },
-                                        child: const Text('Cancel'),
+
+                                        child: Text(
+                                          "Cancel",
+
+                                          style:
+                                          GoogleFonts
+                                              .inter(
+                                            fontWeight:
+                                            FontWeight
+                                                .w600,
+                                          ),
+                                        ),
                                       ),
 
-                                      ElevatedButton(
+                                      FilledButton(
+                                        style:
+                                        FilledButton
+                                            .styleFrom(
+                                          backgroundColor:
+                                          Colors.red
+                                              .shade400,
+
+                                          shape:
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                            BorderRadius.circular(
+                                              14,
+                                            ),
+                                          ),
+                                        ),
+
                                         onPressed: () {
-                                          Navigator.pop(context, true);
+                                          Navigator.pop(
+                                            context,
+                                            true,
+                                          );
                                         },
-                                        child: const Text('Delete'),
+
+                                        child: Text(
+                                          "Delete",
+
+                                          style:
+                                          GoogleFonts
+                                              .inter(
+                                            fontWeight:
+                                            FontWeight
+                                                .w600,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   );
                                 },
                               );
 
-                              // DELETE ONLY IF USER CONFIRMS
-
-                              if (shouldDelete == true) {
-                                noteProvider.deleteNote(note);
+                              if (shouldDelete ==
+                                  true) {
+                                noteProvider.deleteNote(
+                                  note,
+                                );
                               }
                             },
-                            icon: const Icon(
-                              Icons.delete,
-                              color: Colors.red,
+
+                            style:
+                            IconButton.styleFrom(
+                              backgroundColor:
+                              Colors.red.shade50,
+
+                              shape:
+                              RoundedRectangleBorder(
+                                borderRadius:
+                                BorderRadius.circular(
+                                  14,
+                                ),
+                              ),
+                            ),
+
+                            icon: Icon(
+                              Icons
+                                  .delete_outline_rounded,
                               size: 20,
+                              color:
+                              Colors.red.shade400,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => NoteBottomSheet(
-                note: null,
-                index: null,
-
+                ],
               ),
             ),
           );
         },
-        child: const Icon(Icons.add),
+      ),
+
+      floatingActionButton: FloatingActionButton.extended(
+        elevation: 0,
+
+        backgroundColor: Colors.blue.shade500,
+        foregroundColor: Colors.white,
+
+        onPressed: () {
+          openBottomSheet();
+        },
+
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+
+        icon: const Icon(
+          Icons.add_rounded,
+        ),
+
+        label: Text(
+          "New Note",
+
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }
