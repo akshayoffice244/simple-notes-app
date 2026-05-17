@@ -376,9 +376,11 @@ class _CustomListWidget extends StatelessWidget {
               fontSize: 14,
               color: AppColors.textColor,
             ),
-            _CustomDropDownMenu(
-              setListType: provider.setListType,
-              itemIndex: itemIndex,
+            Expanded(
+              child: _CustomDropDownMenu(
+                setListType: provider.setListType,
+                itemIndex: itemIndex,
+              ),
             ),
           ],
         ),

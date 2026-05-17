@@ -224,6 +224,8 @@ class DeletedNotesPage extends StatelessWidget {
 
                       const SizedBox(height: 16),
 
+                      //following widget overflows due to date
+
                       Container(
                         padding:
                         const EdgeInsets.symmetric(
@@ -242,8 +244,7 @@ class DeletedNotesPage extends StatelessWidget {
                         ),
 
                         child: Row(
-                          mainAxisSize:
-                          MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
 
                           children: [
                             Icon(
@@ -258,16 +259,19 @@ class DeletedNotesPage extends StatelessWidget {
                               width: 8,
                             ),
 
-                            Text(
-                              "Deleted: $formattedDate",
+                            Expanded(
+                              child: Text(
+                                "Deleted: $formattedDate",
+                              softWrap: true,
+                                style:
+                                GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight:
+                                  FontWeight.w500,
 
-                              style:
-                              GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight:
-                                FontWeight.w500,
-                                color: Colors
-                                    .grey.shade700,
+                                  color: Colors
+                                      .grey.shade700,
+                                ),
                               ),
                             ),
                           ],
