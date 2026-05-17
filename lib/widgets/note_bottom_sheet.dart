@@ -257,7 +257,7 @@ class _NoteBottomSheetState extends State<NoteBottomSheet> {
               width: double.infinity,
         
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadiusGeometry.only(topLeft: Radius.circular(22), topRight: Radius.circular(22)),
         
                 gradient: LinearGradient(
                   colors: [
@@ -391,6 +391,7 @@ class _CustomListWidget extends StatelessWidget {
             provider.listOfLists[itemIndex].first.type ==
                 NoteBlockType.bulletListHeading)
           Row(
+            spacing: 10,
             children: [
               _CustomText(
                 text: "List heading",
@@ -414,8 +415,7 @@ class _CustomListWidget extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: provider.listOfLists[itemIndex].length - 1,
               itemBuilder: (context, index) {
-                NoteBlockType type = provider.listOfLists[itemIndex].first.type;
-                int i = 0;
+
 
                 List<EditableBlockModel> itemList =
                     provider.listOfLists[itemIndex];
