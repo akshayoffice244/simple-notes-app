@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../models/NoteModel.dart';
 import '../providers/note_provider.dart';
 import '../widgets/note_bottom_sheet.dart';
 import 'deleted_notes_page.dart';
@@ -130,7 +131,15 @@ class _NotesPageState extends State<NotesPage> {
                               fixedSize: Size(20, 20),
                             ),
                             onPressed: () {
-                              openBottomSheet(note: note, index: index);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => NoteBottomSheet(
+                                    note: note,
+                                    index: index,
+                                  ),
+                                ),
+                              );
                             },
                             icon: const Icon(Icons.edit, size: 20),
                           ),
@@ -191,7 +200,16 @@ class _NotesPageState extends State<NotesPage> {
 
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          openBottomSheet();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => NoteBottomSheet(
+                note: null,
+                index: null,
+
+              ),
+            ),
+          );
         },
         child: const Icon(Icons.add),
       ),

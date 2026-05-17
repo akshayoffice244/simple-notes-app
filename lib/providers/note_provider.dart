@@ -16,12 +16,125 @@ class NoteProvider extends ChangeNotifier {
 
   List<NoteModel> get deletedNotes => _deletedNotes;
   final List<List<EditableBlockModel>> listOfLists = [];
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController headingController = TextEditingController();
+  final TextEditingController subheadingController = TextEditingController();
+  final TextEditingController bodyController = TextEditingController();
+
+  void initialisation(NoteModel? myNote) {
+    clearController();
+    clearListOfLists();
+    int currentIndex = 0;
+    if (myNote != null) {
+      titleController.text = myNote.title;
+      if (myNote.blocks.isNotEmpty) {
+        for (var list in myNote.blocks) {
+          switch (list.type) {
+            case NoteBlockType.heading:
+              headingController.text = list.text ?? "";
+              break;
+            case NoteBlockType.subheading:
+              subheadingController.text = list.text ?? "";
+
+              break;
+            case NoteBlockType.body:
+              bodyController.text = list.text ?? "";
+              break;
+            default:
+              TextEditingController controller = TextEditingController(
+                text: list.text,
+              );
+              EditableBlockModel editableBlockModel = EditableBlockModel(
+                type: list.type,
+                controller: controller,
+              );
+              if (listOfLists.isEmpty) {
+                // currentListType = list.type;
+
+                listOfLists.add([editableBlockModel]);
+              } else if (listOfLists[currentIndex].first.type != list.type &&
+                  list.type == NoteBlockType.numbered) {
+                listOfLists[currentIndex].add(editableBlockModel);
+              } else if (listOfLists[currentIndex].first.type != list.type &&
+                  list.type == NoteBlockType.dashedList) {
+                listOfLists[currentIndex].add(editableBlockModel);
+              } else if (listOfLists[currentIndex].first.type != list.type &&
+                  list.type == NoteBlockType.bullet) {
+                listOfLists[currentIndex].add(editableBlockModel);
+              } else if (listOfLists[currentIndex].first.type ==
+                      NoteBlockType.numberedListHeading ||
+                  listOfLists[currentIndex].first.type ==
+                      NoteBlockType.dashedListHeading ||
+                  listOfLists[currentIndex].first.type ==
+                      NoteBlockType.bulletListHeading) {
+                currentIndex++;
+                listOfLists.add([editableBlockModel]);
+              }
+
+              break;
+          }
+        }
+      }
+      //  provider.headingController.text = myNote.blocks.;
+      // provider.titleController.text = myNote.title;
+    }
+  }
+
+  Future<void> createOrUpdateNote(NoteModel? note) async {
+    String title = titleController.text;
+    String heading = headingController.text;
+    String subHeading = subheadingController.text;
+    String body = bodyController.text;
+    List<NoteBlockModel> noteBlocks = [];
+    noteBlocks.add(NoteBlockModel(type: NoteBlockType.heading, text: heading));
+    noteBlocks.add(
+      NoteBlockModel(type: NoteBlockType.subheading, text: subHeading),
+    );
+    noteBlocks.add(NoteBlockModel(type: NoteBlockType.body, text: body));
+    for (var list in listOfLists) {
+      for (var item in list) {
+        noteBlocks.add(
+          NoteBlockModel(type: item.type, text: item.controller.text),
+        );
+      }
+    }
+    NoteModel noteModel = NoteModel(
+      id: note != null
+          ? note.id
+          : DateTime.now().millisecondsSinceEpoch.toString(),
+      title:  title,
+      blocks: noteBlocks,
+      createdAt: note != null
+          ? note.createdAt
+          : DateTime.now().toIso8601String(),
+    );
+
+    if (note != null) {
+      await updateNote(noteModel);
+      print("Updating note ${noteModel.id}");
+    } else {
+      await addNote(noteModel);
+      print("create note");
+    }
+    notifyListeners();
+  }
 
   void addList(NoteBlockType type) {
     listOfLists.add([
       EditableBlockModel(type: type, controller: TextEditingController()),
     ]);
     notifyListeners();
+  }
+  void clearListOfLists(){
+    listOfLists.clear();
+   // notifyListeners();
+  }
+  void clearController(){
+    titleController.clear();
+    headingController.clear();
+    subheadingController.clear();
+    bodyController.clear();
+    //notifyListeners();
   }
 
   void addItemsToList(NoteBlockType listItemType, int index) {
@@ -45,14 +158,32 @@ class NoteProvider extends ChangeNotifier {
         type = NoteBlockType.numberedListHeading;
         break;
       case 3:
-        type = NoteBlockType.dashedList;
+        type = NoteBlockType.dashedListHeading;
         break;
     }
     print("List heading type: ");
     print(type);
-    listOfLists[index].first.type = type;
-    notifyListeners();
+    listOfLists[index][0] = EditableBlockModel(
+      type: type,
+      controller: listOfLists[index].first.controller,
+    );
+    for( var item  in listOfLists[index]){
+      if(item.type !=  NoteBlockType.bulletListHeading && item.type != NoteBlockType.dashedListHeading &&item.type != NoteBlockType.numberedListHeading){
+        if(listOfLists[index].first.type == NoteBlockType.bulletListHeading){
+          item.type = NoteBlockType.bullet;
+        }else if(listOfLists[index].first.type == NoteBlockType.dashedListHeading){
+          item.type = NoteBlockType.dashedList;
+        }else if(listOfLists[index].first.type == NoteBlockType.numberedListHeading){
 
+          item.type = NoteBlockType.numbered;
+        }
+      }
+    }
+    notifyListeners();
+  }
+
+  void createNote() {
+    // NoteModel noteModel =NoteModel(id: DateTime.now().millisecond.toString(), title: titleController.text, blocks: blocks, createdAt: createdAt)
   }
 
   //listen active notes
@@ -69,6 +200,27 @@ class NoteProvider extends ChangeNotifier {
       _deletedNotes = notes;
       notifyListeners();
     });
+  }
+
+  void removeListItem(int itemIndex) {
+    if (listOfLists[itemIndex].length > 1) {
+      listOfLists[itemIndex].removeLast();
+      notifyListeners();
+    }
+  }
+
+  void removeList() {
+    if (listOfLists.isNotEmpty) {
+      listOfLists.removeLast();
+      notifyListeners();
+    }
+  }
+
+  void removeCurrentList(int index) {
+    if (listOfLists.isNotEmpty) {
+      listOfLists.removeAt(index);
+      notifyListeners();
+    }
   }
 
   // add note
@@ -96,79 +248,17 @@ class NoteProvider extends ChangeNotifier {
     await _firestoreService.permanentlyDelete(note);
   }
 
-  //following is code for local storage using sharedprefs
-
-  // LOAD NOTES
-  //
-  // Future<void> loadNotes() async {
-  //   _notes = await NoteStorageService.loadNotes();
-  //
-  //   _deletedNotes = await NoteStorageService.loadDeletedNotes();
-  //
-  //   notifyListeners();
-  // }
-  //
-  // // ADD NOTE
-  //
-  // Future<void> addNote(NoteModel note) async {
-  //   _notes.add(note);
-  //
-  //   await NoteStorageService.saveNotes(_notes);
-  //
-  //   notifyListeners();
-  // }
-  //
-  // // UPDATE NOTE
-  //
-  // Future<void> updateNote(int index, NoteModel updatedNote) async {
-  //   _notes[index] = updatedNote;
-  //
-  //   await NoteStorageService.saveNotes(_notes);
-  //
-  //   notifyListeners();
-  // }
-  //
-  // // DELETE NOTE -> MOVE TO BIN
-  //
-  // Future<void> deleteNote(int index) async {
-  //   final deletedNote = _notes[index];
-  //
-  //   // ADD TO DELETED LIST
-  //   _deletedNotes.add(deletedNote);
-  //
-  //   // REMOVE FROM MAIN LIST
-  //   _notes.removeAt(index);
-  //
-  //   await NoteStorageService.saveNotes(_notes);
-  //
-  //   await NoteStorageService.saveDeletedNotes(_deletedNotes);
-  //
-  //   notifyListeners();
-  // }
-  //
-  // // RESTORE NOTE
-  //
-  // Future<void> restoreNote(int index) async {
-  //   final restoredNote = _deletedNotes[index];
-  //
-  //   _notes.add(restoredNote);
-  //
-  //   _deletedNotes.removeAt(index);
-  //
-  //   await NoteStorageService.saveNotes(_notes);
-  //
-  //   await NoteStorageService.saveDeletedNotes(_deletedNotes);
-  //
-  //   notifyListeners();
-  // }
-  //
-  // // PERMANENT DELETE
-  //
-  // Future<void> permanentlyDeleteNote(int index) async {
-  //   _deletedNotes.removeAt(index);
-  //
-  //   await NoteStorageService.saveDeletedNotes(_deletedNotes);
-  //
-  //   notifyListeners();
-  // }
+  @override
+  void dispose() {
+    super.dispose();
+    titleController.dispose();
+    headingController.dispose();
+    subheadingController.dispose();
+    bodyController.dispose();
+    for (var list in listOfLists) {
+      for (var item in list) {
+        item.controller.dispose();
+      }
+    }
+  }
 }

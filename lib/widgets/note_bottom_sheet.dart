@@ -17,66 +17,185 @@ class NoteBottomSheet extends StatefulWidget {
 }
 
 class _NoteBottomSheetState extends State<NoteBottomSheet> {
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    final provider = context.read<NoteProvider>();
+    NoteModel? myNote = widget.note;
+
+
+    provider.initialisation(myNote);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<NoteProvider>();
 
+
+
+
+
+
     return Scaffold(
-      appBar: AppBar(title: Text("Edit note")),
-        body:SafeArea(
-          
-          child: SingleChildScrollView(
-            child: Column(
+      appBar: AppBar(
+        title: Text(widget.note != null ? "Update" : "Write a note"),
+        surfaceTintColor: Colors.transparent,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
             children: [
               Container(
                 padding: EdgeInsetsGeometry.all(20),
                 color: Colors.white,
                 child: Column(
+                  spacing: 10,
                   children: [
                     Row(
+                      spacing: 10,
                       children: [
+                        Text("Title"),
                         Expanded(
-                          child: ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: provider.listOfLists.length,
-                            itemBuilder: (context, i) {
-                              return _CustomListWidget(itemIndex: i);
+                          child: TextField(
+                            controller: provider.titleController,
+                            onChanged: (value) {
+                              print("inside list title heading");
                             },
+                            decoration: InputDecoration(
+                              hintText: "Enter title",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(12),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
+                    Row(
+                      spacing: 10,
+                      children: [
+                        Text("Heading"),
+                        Expanded(
+                          child: TextField(
+                            controller: provider.headingController,
+                            onChanged: (value) {
+                              print("inside list title heading");
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Enter heading",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      spacing: 10,
+                      children: [
+                        Text("sub Heading"),
+                        Expanded(
+                          child: TextField(
+                            controller: provider.subheadingController,
+                            onChanged: (value) {
+                              print("inside list title heading");
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Enter sub heading",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      spacing: 10,
+                      children: [
+                        Text("Body"),
+                        Expanded(
+                          child: TextField(
+                            controller: provider.bodyController,
+                            onChanged: (value) {
+                              print("inside list title heading");
+                            },
+                            decoration: InputDecoration(
+                              hintText: "Enter body",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: provider.listOfLists.length,
+                      itemBuilder: (context, i) {
+                        print("index ${i}");
+                        return _CustomListWidget(itemIndex: i, note: widget.note);
+                      },
+                    ),
                     FilledButton(
                       onPressed: () {
                         provider.addList(NoteBlockType.none);
+                        print("listoflist ${provider.listOfLists.length}");
+                        print("Clicked add list");
                       },
                       child: Text("Add List"),
                     ),
                   ],
                 ),
-              )
+              ),
+              FilledButton(
+                onPressed: () async {
+                  await provider.createOrUpdateNote(widget.note);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content:  Text( widget.note != null ? "Notes updated successfully!" : "Note added successfully!"),
+                      behavior: SnackBarBehavior.floating, // Makes it float like a toast
+                      duration: const Duration(seconds: 2), // Auto-dismisses
+                      width: 280, // Restricts width to mimic a small toast bubble
+                    ),
+                  );
+                  Navigator.pop(context);
+                },
+                child: Text("Save Note"),
+              ),
             ],
-                  ),
           ),
         ),
-
+      ),
     );
   }
 }
 
 class _CustomListWidget extends StatelessWidget {
   final int itemIndex;
-
-  const _CustomListWidget({super.key, required this.itemIndex});
+  final NoteModel? note;
+  const _CustomListWidget({super.key, required this.itemIndex,required this.note});
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<NoteProvider>();
 
-
-
     return Column(
+      spacing: 10,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 20),
@@ -85,6 +204,7 @@ class _CustomListWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text("List Type"),
+
             DropdownMenu(
               // This single property handles stretching both the input bar AND the popup menu list
               onSelected: (value) {
@@ -143,6 +263,10 @@ class _CustomListWidget extends StatelessWidget {
               Text("List heading:"),
               Expanded(
                 child: TextField(
+                  controller: provider.listOfLists[itemIndex].first.controller,
+                  onChanged: (value) {
+
+                  },
                   decoration: InputDecoration(
                     hintText: "Enter list title",
                     border: OutlineInputBorder(
@@ -165,47 +289,89 @@ class _CustomListWidget extends StatelessWidget {
                 int i = 0;
                 late Widget widget;
                 if (type == NoteBlockType.numberedListHeading)
-                  widget = Text("${i} ");
+                  widget = Text("${i++} ");
                 else if (type == NoteBlockType.bulletListHeading)
-                  widget = Text("0 ");
+                  widget = Text("• ");
                 else
                   widget = Text("- ");
                 i++;
-                return Row(
-                  children: [
-                    widget,
-                    Expanded(
-                      child: TextField(
 
-                        decoration: InputDecoration(
-                          hintText: "Enter list text",
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                List<EditableBlockModel> itemList =
+                    provider.listOfLists[itemIndex];
+                return Container(
+                  margin: EdgeInsets.only(top: 10),
+                  child: Row(
+                    spacing: 15,
+                    children: [
+                      Text(
+                        itemList[index + 1].type == NoteBlockType.numbered
+                            ? "${index + 1}"
+                            : itemList[index + 1].type == NoteBlockType.bullet
+                            ? "• "
+                            : "⁃",
+                      ),
+
+                      Expanded(
+                        child: TextField(
+                          controller: itemList[index + 1].controller,
+                          onChanged: (value) {
+                            print(itemList[index + 1].controller.text);
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Enter list text",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(12)),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 );
               },
+            ),
+            TextButton(
+              onPressed: () {
+                print("itemIndex ${itemIndex}");
+                provider.removeCurrentList(itemIndex);
+              },
+              child: Text("Remove List"),
             ),
           ],
         ),
         SizedBox(height: 10),
         if (provider.listOfLists[itemIndex].first.type != NoteBlockType.none)
-        TextButton(onPressed: () {
-          if(provider.listOfLists[itemIndex].first.type == NoteBlockType.numberedListHeading) {
-            provider.addItemsToList(NoteBlockType.numbered, itemIndex);
-          }
-          else if(provider.listOfLists[itemIndex].first.type == NoteBlockType.dashedListHeading) {
-            provider.addItemsToList(NoteBlockType.dashedList, itemIndex);
-          }
-          else  {
-            provider.addItemsToList(NoteBlockType.bullet, itemIndex);
-          }
-          print("Item was added");
-        }, child: Text("Add List item")),
+          Row(
+            children: [
+              TextButton(
+                onPressed: () {
+                  if (provider.listOfLists[itemIndex].first.type ==
+                      NoteBlockType.numberedListHeading) {
+                    provider.addItemsToList(NoteBlockType.numbered, itemIndex);
+                  } else if (provider.listOfLists[itemIndex].first.type ==
+                      NoteBlockType.dashedListHeading) {
+                    provider.addItemsToList(
+                      NoteBlockType.dashedList,
+                      itemIndex,
+                    );
+                  } else {
+                    provider.addItemsToList(NoteBlockType.bullet, itemIndex);
+                  }
+                  print("Item was added");
+                },
+                child: Text("Add List item"),
+              ),
+              TextButton(
+                onPressed: () {
+                  provider.removeListItem(itemIndex);
+                },
+                child: Text("Delete list item"),
+              ),
+            ],
+          ),
       ],
     );
   }
+
+
 }

@@ -35,7 +35,7 @@ class DeletedNotesPage extends StatelessWidget {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(blocks.isNotEmpty? blocks.first.text : "" ),
+                        Text(blocks.isNotEmpty? blocks.first.text.toString() : "" ),
 
                         Text(
                           "Deleted At: $formattedDate",

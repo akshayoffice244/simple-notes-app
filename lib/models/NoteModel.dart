@@ -30,13 +30,11 @@ class NoteModel {
 
   factory NoteModel.fromJson(Map<String, dynamic> json) {
     return NoteModel(
-      id: json['id'],
-      title: json['title'],
-      blocks: (json['blocks'] as List)
-          .map((e) => NoteBlockModel.fromJson(e))
-          .toList(),
-      createdAt: json['createdAt'],
-      deletedAt: json['deletedAt'],
+      id: json['id'] ?? "",
+      title: json['title'] ?? "",
+      blocks: (json['blocks'] as List?)?.map((e) => NoteBlockModel.fromJson(e)).toList() ?? [],
+      createdAt: json['createdAt'] ?? "",
+      deletedAt: json['deletedAt']?? "",
     );
   }
 
@@ -73,7 +71,7 @@ enum NoteBlockType {
 
 class NoteBlockModel {
   final NoteBlockType type;
-  final String text;
+  final String? text;
 
   NoteBlockModel({required this.type, required this.text});
 
@@ -95,6 +93,7 @@ class EditableBlockModel {
   NoteBlockType type;
 
   TextEditingController controller;
+  int? number = 0;
 
   EditableBlockModel({
     required this.type,

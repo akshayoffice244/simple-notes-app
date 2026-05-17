@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      home: NoteBottomSheet( note: null,index: 0,),
+      home: NotesPage(),
       debugShowCheckedModeBanner: false,
     );
   }
