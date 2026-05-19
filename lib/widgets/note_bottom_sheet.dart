@@ -125,130 +125,36 @@ class _NoteBottomSheetState extends State<NoteBottomSheet> {
         child: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsetsGeometry.all(20),
-                  color: Colors.white,
-                  child: Column(
-                    spacing: 10,
-                    children: [
-                      Row(
-                        spacing: 10,
-                        children: [
-                          _CustomText(
-                            text: "Title",
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25,
-                            color: AppColors.textColor,
-                          ),
-                          Expanded(
-                            child: CustomTextField(
-                              controller: provider.titleController,
-                              hintText: "Enter title",
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        spacing: 10,
-                        children: [
-                          _CustomText(
-                            text: "Heading",
-                            fontWeight: FontWeight.w500,
-                            fontSize: 22,
-                            color: AppColors.textColor,
-                          ),
-                        
-                          Expanded(
-                            child: CustomTextField(
-                              controller: provider.headingController,
-                              hintText: "Enter heading",
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        spacing: 10,
-                        children: [
-                          _CustomText(
-                            text: "Sub Heading",
-                            fontWeight: FontWeight.w300,
-                            fontSize: 19,
-                            color: AppColors.textColor,
-                          ),
-                          Expanded(
-                            child: CustomTextField(
-                              controller: provider.subheadingController,
-                              hintText: "Enter sub heading",
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        spacing: 10,
-                        children: [
-                          _CustomText(
-                            text: "Body",
-                            fontWeight: FontWeight.normal,
-                            fontSize: 20,
-                            color: AppColors.textColor,
-                          ),
-                          Expanded(
-                            child: CustomTextField(
-                              controller: provider.bodyController,
-                              hintText: "body",
-                            ),
-                          ),
-                        ],
-                      ),
-                      ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: provider.listOfLists.length,
-                        itemBuilder: (context, i) {
-                          print("index ${i}");
-                          return _CustomListWidget(
-                            itemIndex: i,
-                            note: widget.note,
-                          );
-                        },
-                      ),
-                      FilledButton.icon(
-                        onPressed: () {
-                          provider.addList(NoteBlockType.none);
-                        },
-                        
-                        icon: const Icon(
-                          Icons.add_rounded,
-                          size: 22,
-                        ),
-                        
-                        label: Text(
-                          "Add List",
-                          style: GoogleFonts.inter(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+              child: Container(
+                padding: EdgeInsetsGeometry.all(20),
+                color: Colors.white,
+                child: Column(
+                  spacing: 10,
+                  children: [
+                    Row(
+                      spacing: 10,
+                      children: [
+
+                        Expanded(
+                          child: CustomTextField(
+                            controller: provider.titleController,
+                            hintText: "Enter title",
                           ),
                         ),
-                        
-                        style: FilledButton.styleFrom(
-                          elevation: 0,
-                        
-                          backgroundColor: Colors.blue.shade500,
-                          foregroundColor: Colors.white,
-                        
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 22,
-                            vertical: 16,
-                          ),
-                        
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                        ),
+                      ],
+                    ),
+
+
+                    Expanded(
+                      child: CustomTextField(
+                        controller: provider.bodyController,
+                        hintText: "body",
+                        expands: true,
+
                       ),
-                    ],
-                  ),
+                    ),
+
+                  ],
                 ),
               ),
             ),
