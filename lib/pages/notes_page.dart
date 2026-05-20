@@ -213,6 +213,19 @@ class _NotesPageState extends State<NotesPage> {
 
         itemBuilder: (context, index) {
           final note = notes[index];
+          String getTitle(NoteModel note){
+            
+            if(note.title.isNotEmpty) {
+              return note.title;
+            } else{
+              for(var item in note.blocks){
+                if(item.text!= null && item.text!.isNotEmpty){
+                  return item.text!;
+                }
+              }
+            }
+            return "";
+          }
 
           return GestureDetector(
             onTap: () {
@@ -267,7 +280,7 @@ class _NotesPageState extends State<NotesPage> {
 
                           children: [
                             Text(
-                              note.title,
+                              getTitle(note),
 
                               maxLines: 2,
                               overflow:

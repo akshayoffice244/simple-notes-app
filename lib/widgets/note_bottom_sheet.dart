@@ -50,9 +50,7 @@ class _NoteBottomSheetState extends State<NoteBottomSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.note != null
-                  ? "Update Note"
-                  : "Write a Note",
+              widget.note != null ? "Update Note" : "Write a Note",
 
               style: GoogleFonts.poppins(
                 fontSize: 24,
@@ -93,10 +91,7 @@ class _NoteBottomSheetState extends State<NoteBottomSheet> {
               ),
             ),
 
-            icon: const Icon(
-              Icons.arrow_back_ios_new_rounded,
-              size: 18,
-            ),
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
           ),
         ),
 
@@ -114,139 +109,221 @@ class _NoteBottomSheetState extends State<NoteBottomSheet> {
                 ),
               ),
 
-              icon: const Icon(
-                Icons.more_vert_rounded,
-              ),
+              icon: const Icon(Icons.more_vert_rounded),
             ),
           ),
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                padding: EdgeInsetsGeometry.all(20),
-                color: Colors.white,
-                child: Column(
-                  spacing: 10,
-                  children: [
-                    Row(
-                      spacing: 10,
-                      children: [
+        child: Container(
+          color: Colors.white,
+          //padding: EdgeInsetsGeometry.all(20),
+          child: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: EdgeInsetsGeometry.all(10),
+                  child: Column(
+                    spacing: 10,
+                    children: [
+                      Row(
+                        spacing: 10,
+                        children: [
+                          Expanded(
+                            child: CustomTextField(
+                              controller: provider.titleController,
+                              hintText: "Enter title",
+                              focusedColor: Colors.yellow,
+                              borderRadius: 8,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (provider.isHeadingActive || provider.headingController.text.isNotEmpty)
+                        CustomTextField(
+                          controller: provider.headingController,
+                          hintText: "Heading",
+                          borderRadius: 8,
+                          focusedColor: Colors.yellow,
+                        ),
+                      if (provider.isSubheadingActive || provider.subheadingController.text.isNotEmpty)
+                        CustomTextField(
+                          controller: provider.subheadingController,
+                          hintText: "Sub heading",
+                          borderRadius: 8,
+                          focusedColor: Colors.yellow,
+                        ),
+                      //    Add two buttons for heading and subheading
+                      Row(
+                        children: [
+                          //Add heading button
+                          Column(
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  provider.isHeadingActive =
+                                      !provider.isHeadingActive;
 
-                        Expanded(
-                          child: CustomTextField(
-                            controller: provider.titleController,
-                            hintText: "Enter title",
+                                  if(!provider.isHeadingActive || provider.headingController.text.isNotEmpty){
+                                    provider.headingController.text = "";
+                                  }
+                                },
+                                child: _CustomText(
+                                  text:provider.isHeadingActive || provider.headingController.text.isNotEmpty ?  "Remove heading" : "Add Heading",
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          //Add sub heading button
+                          TextButton(
+                            onPressed: () {
+                              provider.isSubheadingActive =
+                              !provider.isSubheadingActive;
+                              if(!provider.isSubheadingActive || provider.subheadingController.text.isNotEmpty){
+                                provider.subheadingController.text = "";
+                              }
+                            },
+                            child: _CustomText(
+                              text: provider.isSubheadingActive || provider.subheadingController.text.isNotEmpty ?  "Remove Sub heading" : "Add Sub Heading",
+                              fontWeight: FontWeight.normal,
+                              fontSize: 15,
+                              color: Colors.black38,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              CustomTextField(
+                                controller: provider.bodyController,
+                                hintText: "Write to you heart content",
+                                expands: false,
+                                minLines: 1,
+                                focusedColor: Colors.yellow,
+                                borderRadius: 8,
+                              ),
+                              ListView.builder(
+                                physics: NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: provider.listOfLists.length,
+                                itemBuilder: (context, i) {
+                                  print("index ${i}");
+                                  return _CustomListWidget(
+                                    itemIndex: i,
+                                    note: widget.note,
+                                  );
+                                },
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  TextButton(onPressed: (){
+                                    provider.addList(NoteBlockType.none);
+                                  }, child: _CustomText(text: "Add List", fontWeight: FontWeight.w500, fontSize: 15, color: Colors.blueGrey)),
+                                ],
+                              )
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-
-
-                    Expanded(
-                      child: CustomTextField(
-                        controller: provider.bodyController,
-                        hintText: "body",
-                        expands: true,
-
                       ),
-                    ),
 
-                  ],
-                ),
-              ),
-            ),
-            //Save button
-            Container(
-              width: double.infinity,
-        
-              decoration: BoxDecoration(
-                borderRadius: BorderRadiusGeometry.only(topLeft: Radius.circular(22), topRight: Radius.circular(22)),
-        
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.blue.shade400,
-                    Colors.blue.shade600,
-                  ],
-                ),
-        
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.blue.shade200,
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
+                      //Add  option to add list of types numbered,dashed and bulleted
+                    ],
                   ),
-                ],
+                ),
               ),
-        
-              child: Material(
-                color: Colors.transparent,
-        
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(22),
-        
-                  onTap: () async {
-                    await provider.createOrUpdateNote(widget.note);
-        
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          widget.note != null
-                              ? "Notes updated successfully!"
-                              : "Note added successfully!",
-                        ),
-        
-                        behavior: SnackBarBehavior.floating,
-                        duration: const Duration(seconds: 2),
-        
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                    );
-        
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                  },
-        
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 18,
+              //Save button
+              Container(
+                width: double.infinity,
+
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadiusGeometry.only(
+                    topLeft: Radius.circular(22),
+                    topRight: Radius.circular(22),
+                  ),
+
+                  gradient: LinearGradient(
+                    colors: [Colors.blue.shade400, Colors.blue.shade600],
+                  ),
+
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.shade200,
+                      blurRadius: 18,
+                      offset: const Offset(0, 8),
                     ),
-        
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          widget.note != null
-                              ? Icons.edit_rounded
-                              : Icons.save_rounded,
-                          color: Colors.white,
-                          size: 22,
+                  ],
+                ),
+
+                child: Material(
+                  color: Colors.transparent,
+
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(22),
+
+                    onTap: () async {
+                      await provider.createOrUpdateNote(widget.note);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            widget.note != null
+                                ? "Notes updated successfully!"
+                                : "Note added successfully!",
+                          ),
+
+                          behavior: SnackBarBehavior.floating,
+                          duration: const Duration(seconds: 2),
+
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                         ),
-        
-                        const SizedBox(width: 12),
-        
-                        Text(
-                          widget.note != null
-                              ? "Update Note"
-                              : "Save Note",
-        
-                          style: GoogleFonts.inter(
+                      );
+
+                      Navigator.popUntil(context, (route) => route.isFirst);
+                    },
+
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            widget.note != null
+                                ? Icons.edit_rounded
+                                : Icons.save_rounded,
                             color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.2,
+                            size: 22,
                           ),
-                        ),
-                      ],
+
+                          const SizedBox(width: 12),
+
+                          Text(
+                            widget.note != null ? "Update Note" : "Save Note",
+
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            )
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -276,12 +353,7 @@ class _CustomListWidget extends StatelessWidget {
           spacing: 10,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            _CustomText(
-              text: "Select list type",
-              fontWeight: FontWeight.w300,
-              fontSize: 14,
-              color: AppColors.textColor,
-            ),
+
             Expanded(
               child: _CustomDropDownMenu(
                 setListType: provider.setListType,
@@ -299,12 +371,6 @@ class _CustomListWidget extends StatelessWidget {
           Row(
             spacing: 10,
             children: [
-              _CustomText(
-                text: "List heading",
-                fontWeight: FontWeight.w300,
-                fontSize: 14,
-                color: AppColors.textColor,
-              ),
               Expanded(
                 child: CustomTextField(
                   controller: provider.listOfLists[itemIndex].first.controller,
@@ -321,8 +387,6 @@ class _CustomListWidget extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: provider.listOfLists[itemIndex].length - 1,
               itemBuilder: (context, index) {
-
-
                 List<EditableBlockModel> itemList =
                     provider.listOfLists[itemIndex];
                 return Container(
@@ -330,16 +394,15 @@ class _CustomListWidget extends StatelessWidget {
                   child: Row(
                     spacing: 15,
                     children: [
-                      _CustomText(
-                        text: itemList[index + 1].type == NoteBlockType.numbered
-                            ? "${index + 1}"
-                            : itemList[index + 1].type == NoteBlockType.bullet
-                            ? "• "
-                            : "⁃",
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        color: AppColors.textColor,
-                      ),
+                      if(itemList[index + 1].type == NoteBlockType.numbered)...[
+                        _CustomText(text: "${index + 1}", fontWeight: FontWeight.w400 , fontSize: 18, color: Colors.black38),
+                      ]
+                      else if(itemList[index + 1].type == NoteBlockType.bullet)...[
+                        CircleAvatar(radius: 4,backgroundColor: Colors.black38,),
+                      ]else...[
+                        _CustomText(text: "-", fontWeight: FontWeight.w800 , fontSize: 18, color: Colors.black38),
+                      ],
+
 
                       Expanded(
                         child: CustomTextField(
@@ -378,7 +441,7 @@ class _CustomListWidget extends StatelessWidget {
                         );
                       }
                     },
-                    icon: Icon(Icons.add, color: Colors.blueAccent,),
+                    icon: Icon(Icons.add, color: Colors.blueAccent),
                     label: _CustomText(
                       text: "Add list item",
                       fontWeight: FontWeight.w500,
@@ -390,7 +453,7 @@ class _CustomListWidget extends StatelessWidget {
                     onPressed: () {
                       provider.removeListItem(itemIndex);
                     },
-                    icon: Icon(Icons.remove, color: Colors.redAccent,),
+                    icon: Icon(Icons.remove, color: Colors.redAccent),
                     label: _CustomText(
                       text: "Remove list item",
                       fontWeight: FontWeight.w500,

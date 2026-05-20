@@ -361,6 +361,7 @@ class _CustomListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List itemList = listOfLists[itemIndex].where((item)=>item.text != null ? item.text!.isNotEmpty : false).toList();
     return Padding(
       padding: const EdgeInsets.only(bottom: 28),
 
@@ -391,12 +392,13 @@ class _CustomListWidget extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
 
-            itemCount: listOfLists[itemIndex].length - 1,
+          //  itemCount: listOfLists[itemIndex].length - 1,
+            itemCount:itemList.length - 1,
 
             itemBuilder: (context, index) {
-              List<NoteBlockModel> itemList =
-              listOfLists[itemIndex];
-
+             // List<NoteBlockModel> itemList =
+              //listOfLists[itemIndex];
+              int count = 0;
               return Container(
                 margin: const EdgeInsets.only(top: 14),
 

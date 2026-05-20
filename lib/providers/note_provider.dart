@@ -21,6 +21,18 @@ class NoteProvider extends ChangeNotifier {
   final TextEditingController subheadingController = TextEditingController();
   final TextEditingController bodyController = TextEditingController();
 
+  bool _isHeadingActive = false;
+
+  set isHeadingActive(bool value) {
+    _isHeadingActive = value;
+    notifyListeners();
+  }
+
+  bool _isSubheadingActive = false;
+
+  bool get isHeadingActive => _isHeadingActive;
+
+
   void initialisation(NoteModel? myNote) {
     clearController();
     clearListOfLists();
@@ -260,5 +272,14 @@ class NoteProvider extends ChangeNotifier {
         item.controller.dispose();
       }
     }
+  }
+
+  bool get isSubheadingActive {
+    return _isSubheadingActive;
+  }
+
+  set isSubheadingActive(bool value) {
+    _isSubheadingActive = value;
+    notifyListeners();
   }
 }
