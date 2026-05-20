@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:simple_notes_app/models/NoteModel.dart';
+import 'package:simple_notes_app/modules/shownotes/models/NoteModel.dart';
 
-import '../../models/deleted_note_history_model.dart';
+import '../models/deleted_note_history_model.dart';
 
 class FirestoreService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;

@@ -1,4 +1,4 @@
-import 'package:simple_notes_app/models/NoteModel.dart';
+import 'package:simple_notes_app/modules/shownotes/models/NoteModel.dart';
 
 class DeletedNoteHistoryModel {
   final String noteId;

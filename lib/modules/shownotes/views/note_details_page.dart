@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../models/NoteModel.dart';
 import '../providers/note_provider.dart';
-import '../widgets/note_bottom_sheet.dart';
+import 'note_bottom_sheet.dart';
 
 class NoteDetailsPage extends StatelessWidget {
   final NoteModel note;

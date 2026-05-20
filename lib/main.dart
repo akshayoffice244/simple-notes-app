@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:simple_notes_app/pages/notes_page.dart';
-import 'package:simple_notes_app/providers/note_provider.dart';
-import 'package:simple_notes_app/widgets/note_bottom_sheet.dart';
+import 'package:simple_notes_app/modules/shownotes/views/notes_page.dart';
+import 'package:simple_notes_app/modules/shownotes/providers/note_provider.dart';
+import 'package:simple_notes_app/modules/shownotes/views/note_bottom_sheet.dart';
 
 import 'firebase_options.dart';
 

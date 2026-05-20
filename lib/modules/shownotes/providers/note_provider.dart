@@ -1,10 +1,10 @@
 // lib/providers/note_provider.dart
 
 import 'package:flutter/material.dart';
-import 'package:simple_notes_app/providers/Repository/firestore_service.dart';
+import 'package:simple_notes_app/modules/shownotes/services/firestore_service.dart';
 
 import '../models/NoteModel.dart';
-import '../services/note_storage_service.dart';
+
 
 class NoteProvider extends ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();

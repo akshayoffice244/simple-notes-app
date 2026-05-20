@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../models/NoteModel.dart';
 import '../providers/note_provider.dart';
-import '../widgets/note_bottom_sheet.dart';
+import 'note_bottom_sheet.dart';
 import 'deleted_notes_page.dart';
 import 'note_details_page.dart';
 
