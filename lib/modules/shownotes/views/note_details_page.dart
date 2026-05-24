@@ -111,55 +111,7 @@ class NoteDetailsPage extends StatelessWidget {
 
     int currentIndex = 0;
 
-    if (note.blocks.isNotEmpty) {
-      for (var list in note.blocks) {
-        switch (list.type) {
-          case NoteBlockType.heading:
-            heading = list.text ?? "";
-            break;
 
-          case NoteBlockType.subheading:
-            subHeading = list.text ?? "";
-            break;
-
-          case NoteBlockType.body:
-            body = list.text ?? "";
-            break;
-
-          default:
-            NoteBlockModel noteBlockModel = NoteBlockModel(
-              type: list.type,
-              text: list.text,
-            );
-
-            if (listOfLists.isEmpty) {
-              listOfLists.add([noteBlockModel]);
-            } else if (listOfLists[currentIndex].first.type !=
-                list.type &&
-                list.type == NoteBlockType.numbered) {
-              listOfLists[currentIndex].add(noteBlockModel);
-            } else if (listOfLists[currentIndex].first.type !=
-                list.type &&
-                list.type == NoteBlockType.dashedList) {
-              listOfLists[currentIndex].add(noteBlockModel);
-            } else if (listOfLists[currentIndex].first.type !=
-                list.type &&
-                list.type == NoteBlockType.bullet) {
-              listOfLists[currentIndex].add(noteBlockModel);
-            } else if (listOfLists[currentIndex].first.type ==
-                NoteBlockType.numberedListHeading ||
-                listOfLists[currentIndex].first.type ==
-                    NoteBlockType.dashedListHeading ||
-                listOfLists[currentIndex].first.type ==
-                    NoteBlockType.bulletListHeading) {
-              currentIndex++;
-              listOfLists.add([noteBlockModel]);
-            }
-
-            break;
-        }
-      }
-    }
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),

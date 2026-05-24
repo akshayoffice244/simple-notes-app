@@ -6,14 +6,14 @@ class NoteModel {
   final String id;
 
   final String title;
-  final List<NoteBlockModel> blocks;
+  final String content;
   final String createdAt;
   final String? deletedAt;
 
   NoteModel({
     required this.id,
     required this.title,
-    required this.blocks,
+    required this.content,
     required this.createdAt,
     this.deletedAt,
   });
@@ -22,7 +22,7 @@ class NoteModel {
     return {
       'id': id,
       'title': title,
-      'blocks': blocks.map((e) => e.toJson()).toList(),
+      'content': content,
       'createdAt': createdAt,
       'deletedAt': deletedAt,
     };
@@ -32,7 +32,7 @@ class NoteModel {
     return NoteModel(
       id: json['id'] ?? "",
       title: json['title'] ?? "",
-      blocks: (json['blocks'] as List?)?.map((e) => NoteBlockModel.fromJson(e)).toList() ?? [],
+      content:json['content'] ?? "",
       createdAt: json['createdAt'] ?? "",
       deletedAt: json['deletedAt']?? "",
     );
@@ -42,14 +42,14 @@ class NoteModel {
   NoteModel copyWith({
     String? id,
     String? title,
-    List<NoteBlockModel>? blocks,
+    String? content,
     String? createdAt,
     String? deletedAt,
   }) {
     return NoteModel(
       id: id ?? this.id,
       title: title ?? this.title,
-      blocks: blocks ?? this.blocks,
+      content: content ?? this.content,
       createdAt: createdAt ?? this.createdAt,
       deletedAt: deletedAt ?? this.deletedAt,
     );

@@ -80,7 +80,7 @@ class FirestoreService {
       noteId: note.id,
       userId: userId,
       title: note.title,
-      blocks: note.blocks,
+      content: note.content,
       createdAt: note.createdAt,
       deletedAt: note.deletedAt ?? '',
       permanentlyDeletedAt:

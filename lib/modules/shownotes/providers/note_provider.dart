@@ -1,10 +1,12 @@
 // lib/providers/note_provider.dart
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:simple_notes_app/modules/shownotes/services/firestore_service.dart';
 
 import '../models/NoteModel.dart';
-
 
 class NoteProvider extends ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
@@ -21,6 +23,8 @@ class NoteProvider extends ChangeNotifier {
   final TextEditingController subheadingController = TextEditingController();
   final TextEditingController bodyController = TextEditingController();
 
+  final quillController = QuillController.basic();
+
   bool _isHeadingActive = false;
 
   set isHeadingActive(bool value) {
@@ -32,90 +36,32 @@ class NoteProvider extends ChangeNotifier {
 
   bool get isHeadingActive => _isHeadingActive;
 
-
   void initialisation(NoteModel? myNote) {
     clearController();
     clearListOfLists();
     int currentIndex = 0;
     if (myNote != null) {
-      titleController.text = myNote.title;
-      if (myNote.blocks.isNotEmpty) {
-        for (var list in myNote.blocks) {
-          switch (list.type) {
-            case NoteBlockType.heading:
-              headingController.text = list.text ?? "";
-              break;
-            case NoteBlockType.subheading:
-              subheadingController.text = list.text ?? "";
-
-              break;
-            case NoteBlockType.body:
-              bodyController.text = list.text ?? "";
-              break;
-            default:
-              TextEditingController controller = TextEditingController(
-                text: list.text,
-              );
-              EditableBlockModel editableBlockModel = EditableBlockModel(
-                type: list.type,
-                controller: controller,
-              );
-              if (listOfLists.isEmpty) {
-                // currentListType = list.type;
-
-                listOfLists.add([editableBlockModel]);
-              } else if (listOfLists[currentIndex].first.type != list.type &&
-                  list.type == NoteBlockType.numbered) {
-                listOfLists[currentIndex].add(editableBlockModel);
-              } else if (listOfLists[currentIndex].first.type != list.type &&
-                  list.type == NoteBlockType.dashedList) {
-                listOfLists[currentIndex].add(editableBlockModel);
-              } else if (listOfLists[currentIndex].first.type != list.type &&
-                  list.type == NoteBlockType.bullet) {
-                listOfLists[currentIndex].add(editableBlockModel);
-              } else if (listOfLists[currentIndex].first.type ==
-                      NoteBlockType.numberedListHeading ||
-                  listOfLists[currentIndex].first.type ==
-                      NoteBlockType.dashedListHeading ||
-                  listOfLists[currentIndex].first.type ==
-                      NoteBlockType.bulletListHeading) {
-                currentIndex++;
-                listOfLists.add([editableBlockModel]);
-              }
-
-              break;
-          }
-        }
-      }
       //  provider.headingController.text = myNote.blocks.;
       // provider.titleController.text = myNote.title;
+      quillController.document = Document.fromJson(jsonDecode(myNote.content));
     }
   }
 
   Future<void> createOrUpdateNote(NoteModel? note) async {
-    String title = titleController.text;
-    String heading = headingController.text;
-    String subHeading = subheadingController.text;
-    String body = bodyController.text;
-    List<NoteBlockModel> noteBlocks = [];
-    noteBlocks.add(NoteBlockModel(type: NoteBlockType.heading, text: heading));
-    noteBlocks.add(
-      NoteBlockModel(type: NoteBlockType.subheading, text: subHeading),
-    );
-    noteBlocks.add(NoteBlockModel(type: NoteBlockType.body, text: body));
-    for (var list in listOfLists) {
-      for (var item in list) {
-        noteBlocks.add(
-          NoteBlockModel(type: item.type, text: item.controller.text),
-        );
-      }
-    }
+    final plainText = quillController.document.toPlainText();
+
+    final lines = plainText.split('\n');
+
+    final title = lines.first.trim();
+
+    String content = jsonEncode(quillController.document.toDelta().toJson());
+
     NoteModel noteModel = NoteModel(
       id: note != null
           ? note.id
           : DateTime.now().millisecondsSinceEpoch.toString(),
-      title:  title,
-      blocks: noteBlocks,
+      title: title,
+      content: content,
       createdAt: note != null
           ? note.createdAt
           : DateTime.now().toIso8601String(),
@@ -123,10 +69,8 @@ class NoteProvider extends ChangeNotifier {
 
     if (note != null) {
       await updateNote(noteModel);
-      print("Updating note ${noteModel.id}");
     } else {
       await addNote(noteModel);
-      print("create note");
     }
     notifyListeners();
   }
@@ -137,15 +81,18 @@ class NoteProvider extends ChangeNotifier {
     ]);
     notifyListeners();
   }
-  void clearListOfLists(){
+
+  void clearListOfLists() {
     listOfLists.clear();
-   // notifyListeners();
+    // notifyListeners();
   }
-  void clearController(){
+
+  void clearController() {
     titleController.clear();
     headingController.clear();
     subheadingController.clear();
     bodyController.clear();
+    quillController.clear();
     //notifyListeners();
   }
 
@@ -179,14 +126,17 @@ class NoteProvider extends ChangeNotifier {
       type: type,
       controller: listOfLists[index].first.controller,
     );
-    for( var item  in listOfLists[index]){
-      if(item.type !=  NoteBlockType.bulletListHeading && item.type != NoteBlockType.dashedListHeading &&item.type != NoteBlockType.numberedListHeading){
-        if(listOfLists[index].first.type == NoteBlockType.bulletListHeading){
+    for (var item in listOfLists[index]) {
+      if (item.type != NoteBlockType.bulletListHeading &&
+          item.type != NoteBlockType.dashedListHeading &&
+          item.type != NoteBlockType.numberedListHeading) {
+        if (listOfLists[index].first.type == NoteBlockType.bulletListHeading) {
           item.type = NoteBlockType.bullet;
-        }else if(listOfLists[index].first.type == NoteBlockType.dashedListHeading){
+        } else if (listOfLists[index].first.type ==
+            NoteBlockType.dashedListHeading) {
           item.type = NoteBlockType.dashedList;
-        }else if(listOfLists[index].first.type == NoteBlockType.numberedListHeading){
-
+        } else if (listOfLists[index].first.type ==
+            NoteBlockType.numberedListHeading) {
           item.type = NoteBlockType.numbered;
         }
       }

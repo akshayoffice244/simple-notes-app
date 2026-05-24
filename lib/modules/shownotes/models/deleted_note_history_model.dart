@@ -7,7 +7,7 @@ class DeletedNoteHistoryModel {
 
   final String title;
 
-  final List<NoteBlockModel> blocks;
+  final String content;
 
   final String createdAt;
 
@@ -19,7 +19,7 @@ class DeletedNoteHistoryModel {
     required this.noteId,
     required this.userId,
     required this.title,
-    required this.blocks,
+    required this.content,
     required this.createdAt,
     required this.deletedAt,
     required this.permanentlyDeletedAt,
@@ -30,7 +30,7 @@ class DeletedNoteHistoryModel {
       'noteId': noteId,
       'userId': userId,
       'title': title,
-      'blocks': blocks,
+      'content': content,
       'createdAt': createdAt,
       'deletedAt': deletedAt,
       'permanentlyDeletedAt':
@@ -45,7 +45,7 @@ class DeletedNoteHistoryModel {
       noteId: json['noteId'],
       userId: json['userId'],
       title: json['title'],
-      blocks: json['blocks'],
+      content: json['content'],
       createdAt: json['createdAt'],
       deletedAt: json['deletedAt'],
       permanentlyDeletedAt:

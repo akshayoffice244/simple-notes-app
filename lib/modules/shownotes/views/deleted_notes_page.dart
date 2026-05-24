@@ -127,7 +127,7 @@ class DeletedNotesPage extends StatelessWidget {
             ),
           );
 
-          final blocks = note.blocks;
+        //  final blocks = note.blocks;
 
           return Container(
             margin: const EdgeInsets.only(bottom: 18),
@@ -199,28 +199,28 @@ class DeletedNotesPage extends StatelessWidget {
                         ),
                       ),
 
-                      if (blocks.isNotEmpty &&
-                          blocks.first.text !=
-                              null) ...[
-                        const SizedBox(height: 10),
-
-                        Text(
-                          blocks.first.text
-                              .toString(),
-
-                          maxLines: 2,
-                          overflow:
-                          TextOverflow.ellipsis,
-
-                          style:
-                          GoogleFonts.inter(
-                            fontSize: 15,
-                            height: 1.5,
-                            color: Colors
-                                .grey.shade700,
-                          ),
-                        ),
-                      ],
+                      // if (blocks.isNotEmpty &&
+                      //     blocks.first.text !=
+                      //         null) ...[
+                      //   const SizedBox(height: 10),
+                      //
+                      //   Text(
+                      //     blocks.first.text
+                      //         .toString(),
+                      //
+                      //     maxLines: 2,
+                      //     overflow:
+                      //     TextOverflow.ellipsis,
+                      //
+                      //     style:
+                      //     GoogleFonts.inter(
+                      //       fontSize: 15,
+                      //       height: 1.5,
+                      //       color: Colors
+                      //           .grey.shade700,
+                      //     ),
+                      //   ),
+                      // ],
 
                       const SizedBox(height: 16),
 

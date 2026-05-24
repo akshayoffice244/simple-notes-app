@@ -218,11 +218,7 @@ class _NotesPageState extends State<NotesPage> {
             if(note.title.isNotEmpty) {
               return note.title;
             } else{
-              for(var item in note.blocks){
-                if(item.text!= null && item.text!.isNotEmpty){
-                  return item.text!;
-                }
-              }
+
             }
             return "";
           }
@@ -232,10 +228,7 @@ class _NotesPageState extends State<NotesPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => NoteDetailsPage(
-                    note: note,
-                    index: index,
-                  ),
+                  builder: (_) =>NoteBottomSheet(note: note, index: index),
                 ),
               );
             },
@@ -280,7 +273,7 @@ class _NotesPageState extends State<NotesPage> {
 
                           children: [
                             Text(
-                              getTitle(note),
+                              note.title,
 
                               maxLines: 2,
                               overflow:

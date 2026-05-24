@@ -1,6 +1,7 @@
 // lib/widgets/note_bottom_sheet.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:simple_notes_app/core/constants/app_colors.dart';
@@ -120,124 +121,12 @@ class _NoteBottomSheetState extends State<NoteBottomSheet> {
           //padding: EdgeInsetsGeometry.all(20),
           child: Column(
             children: [
-              Expanded(
-                child: Container(
-                  padding: EdgeInsetsGeometry.all(10),
-                  child: Column(
-                    spacing: 10,
-                    children: [
-                      Row(
-                        spacing: 10,
-                        children: [
-                          Expanded(
-                            child: CustomTextField(
-                              controller: provider.titleController,
-                              hintText: "Enter title",
-                              focusedColor: Colors.yellow,
-                              borderRadius: 8,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (provider.isHeadingActive || provider.headingController.text.isNotEmpty)
-                        CustomTextField(
-                          controller: provider.headingController,
-                          hintText: "Heading",
-                          borderRadius: 8,
-                          focusedColor: Colors.yellow,
-                        ),
-                      if (provider.isSubheadingActive || provider.subheadingController.text.isNotEmpty)
-                        CustomTextField(
-                          controller: provider.subheadingController,
-                          hintText: "Sub heading",
-                          borderRadius: 8,
-                          focusedColor: Colors.yellow,
-                        ),
-                      //    Add two buttons for heading and subheading
-                      Row(
-                        children: [
-                          //Add heading button
-                          Column(
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  provider.isHeadingActive =
-                                      !provider.isHeadingActive;
+              QuillSimpleToolbar(controller: provider.quillController),
 
-                                  if(!provider.isHeadingActive || provider.headingController.text.isNotEmpty){
-                                    provider.headingController.text = "";
-                                  }
-                                },
-                                child: _CustomText(
-                                  text:provider.isHeadingActive || provider.headingController.text.isNotEmpty ?  "Remove heading" : "Add Heading",
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          //Add sub heading button
-                          TextButton(
-                            onPressed: () {
-                              provider.isSubheadingActive =
-                              !provider.isSubheadingActive;
-                              if(!provider.isSubheadingActive || provider.subheadingController.text.isNotEmpty){
-                                provider.subheadingController.text = "";
-                              }
-                            },
-                            child: _CustomText(
-                              text: provider.isSubheadingActive || provider.subheadingController.text.isNotEmpty ?  "Remove Sub heading" : "Add Sub Heading",
-                              fontWeight: FontWeight.normal,
-                              fontSize: 15,
-                              color: Colors.black38,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              CustomTextField(
-                                controller: provider.bodyController,
-                                hintText: "Write to you heart content",
-                                expands: false,
-                                minLines: 1,
-                                focusedColor: Colors.yellow,
-                                borderRadius: 8,
-                              ),
-                              ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: provider.listOfLists.length,
-                                itemBuilder: (context, i) {
-                                  print("index ${i}");
-                                  return _CustomListWidget(
-                                    itemIndex: i,
-                                    note: widget.note,
-                                  );
-                                },
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  TextButton(onPressed: (){
-                                    provider.addList(NoteBlockType.none);
-                                  }, child: _CustomText(text: "Add List", fontWeight: FontWeight.w500, fontSize: 15, color: Colors.blueGrey)),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      //Add  option to add list of types numbered,dashed and bulleted
-                    ],
-                  ),
-                ),
-              ),
+              Expanded(child: Container(
+                padding: const EdgeInsets.only(left: 10,right: 10),
+                child: QuillEditor.basic(controller: provider.quillController),
+              )),
               //Save button
               Container(
                 width: double.infinity,
