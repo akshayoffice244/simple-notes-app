@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "211995731170",
+    "project_id": "porlob-notes-app",
+    "storage_bucket": "porlob-notes-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:211995731170:android:595a514d3d0ba2fb88aabb",
+        "android_client_info": {
+          "package_name": "com.codechakra.simple_notes_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD84nHsT2ZG33k5nCI6JohSV3lCvGVenuM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
